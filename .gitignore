@@ -1,0 +1,22 @@
+# Ignore results directory
+data/results/
+
+# Ignore audio directory
+data/audio/
+
+# General Python ignores
+*.pyc
+*.pyo
+__pycache__/
+*.log
+
+# Virtual environment
+venv/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
