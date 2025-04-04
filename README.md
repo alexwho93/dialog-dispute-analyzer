@@ -93,7 +93,7 @@ You can run the classifier using one of the following methods:
 Use the `python` command to execute the `run_classifier.py` script. Replace the placeholders with the actual paths to your model and audio file.
 
 ```bash
-python scripts/run_classifier.py --model /path/to/your_model.pt \
+python scripts/run_classifier.py --model /path/to/model.pt \
                                  --input /path/to/your_audio.wav \
                                  --output /path/to/output.csv \
                                  --window-sec 3.0 \
