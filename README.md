@@ -39,11 +39,11 @@ It is **highly recommended** to use a Conda environment (Method 2) to avoid depe
 
     *   *Example (CPU only):*
         ```bash
-        pip install torch torchvision torchaudio
+        pip install torch torchaudio
         ```
     *   *Example (CUDA 11.8):*
         ```bash
-        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+        pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
         ```
         *(Replace `cu118` with your CUDA version, e.g., `cu121`)*
 
@@ -67,11 +67,11 @@ It is **highly recommended** to use a Conda environment (Method 2) to avoid depe
 
     *   *Example (CPU only):*
         ```bash
-        conda install pytorch torchvision torchaudio cpuonly -c pytorch -y
+        conda install pytorch torchaudio cpuonly -c pytorch -y
         ```
     *   *Example (CUDA 11.8):*
         ```bash
-        conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia -y
+        conda install pytorch torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia -y
         ```
         *(Replace `pytorch-cuda=11.8` with your CUDA version, e.g., `pytorch-cuda=12.1`)*
 
@@ -104,7 +104,24 @@ python scripts/run_classifier.py --model /path/to/model.pt \
                                  --device auto
 ```
 
-### Option 2: Use the `run.sh` Script
+### Arguments:
+
+The `run_classifier.py` script accepts the following command-line arguments:
+
+| Argument                 | Required | Default                       | Description                                                                                                                                        |
+| :----------------------- | :------- | :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--model PATH`           | Yes      | N/A                           | Path to the exported TorchScript classifier model (`.pt` file).                                                                                    |
+| `--input PATH`           | Yes      | N/A                           | Path to the input audio file (e.g., `.wav`, `.mp3`).                                                                                               |
+| `--output PATH`          | No       | `output_timestamps_raw.csv` | Path for saving the detailed (raw, per-window) results CSV. If smoothing is enabled, smoothed results saved to `<output_path>_smoothed.csv`. |
+| `--window-sec FLOAT`     | No       | `3.0`                         | Duration of the analysis window in seconds.                                                                                                        |
+| `--step-sec FLOAT`       | No       | `1.0`                         | Step size (overlap) of the sliding window in seconds.                                                                                              |
+| `--activation-threshold FLOAT` | No | `0.0`                         | Minimum probability (0.0-1.0) for a class prediction. Below this, label is 'uncertain'. Set to `0.0` to disable.                                   |
+| `--smoothing`            | No       | `False`                       | Enable the multi-stage smoothing pipeline.                                                                                                         |
+| `--min-smooth-duration FLOAT` | No | `1.5`                         | Minimum duration (seconds) for a segment *not* to be considered 'short' during advanced smoothing. Only active if `--smoothing` is enabled.        |
+| `--device {auto,cuda,cpu}` | No    | `auto`                        | Device to run inference on (`auto`, `cuda`, `cpu`).                                                                                                |
+| `--verbose`, `-v`        | No       | `False`                       | Enable verbose (DEBUG level) logging.                                                                                                              |
+
+### Option 2: Use the `run.sh` Script(Linux/WSL2)
 
 A `run.sh` script is provided for convenience. Update the script with the paths to your model and audio file, or pass them as arguments if the script supports it.
 
@@ -124,19 +141,24 @@ The `run.sh` script will internally call the `run_classifier.py` script with pre
 
 For both options, ensure that the required dependencies are installed and the environment (e.g., Conda or virtual environment) is activated if applicable.
 
-## Arguments
+## Future Enhancements
 
-The `run_classifier.py` script accepts the following command-line arguments:
+The following features and improvements are planned for future releases of the project:
 
-| Argument                 | Required | Default                       | Description                                                                                                                                        |
-| :----------------------- | :------- | :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--model PATH`           | Yes      | N/A                           | Path to the exported TorchScript classifier model (`.pt` file).                                                                                    |
-| `--input PATH`           | Yes      | N/A                           | Path to the input audio file (e.g., `.wav`, `.mp3`).                                                                                               |
-| `--output PATH`          | No       | `output_timestamps_raw.csv` | Path for saving the detailed (raw, per-window) results CSV. If smoothing is enabled, smoothed results saved to `<output_path_stem>_smoothed.csv`. |
-| `--window-sec FLOAT`     | No       | `3.0`                         | Duration of the analysis window in seconds.                                                                                                        |
-| `--step-sec FLOAT`       | No       | `1.0`                         | Step size (overlap) of the sliding window in seconds.                                                                                              |
-| `--activation-threshold FLOAT` | No | `0.0`                         | Minimum probability (0.0-1.0) for a class prediction. Below this, label is 'uncertain'. Set to `0.0` to disable.                                   |
-| `--smoothing`            | No       | `False`                       | Enable the multi-stage smoothing pipeline.                                                                                                         |
-| `--min-smooth-duration FLOAT` | No | `1.5`                         | Minimum duration (seconds) for a segment *not* to be considered 'short' during advanced smoothing. Only active if `--smoothing` is enabled.        |
-| `--device {auto,cuda,cpu}` | No    | `auto`                        | Device to run inference on (`auto`, `cuda`, `cpu`).                                                                                                |
-| `--verbose`, `-v`        | No       | `False`                       | Enable verbose (DEBUG level) logging.                                                                                                              |
+* **Model Training:** Enhance the model's accuracy by training it further on diverse and comprehensive datasets to improve its performance across various scenarios.
+* **Improved Smoothing Algorithms:** Experiment with advanced smoothing techniques for better prediction coherence.
+* **Model Training Pipeline:** Provide scripts and documentation for training custom models using user-provided datasets.
+* **Web Interface:** Develop a simple web-based interface for uploading audio files and visualizing predictions.
+* **Batch Processing:** Add support for processing multiple audio files in a single run.
+* **Real-Time Inference:** Enable real-time audio processing and classification for live audio streams.
+
+## Training Notebooks
+
+The following Jupyter notebooks are used for training the model. They provide step-by-step workflows for data preparation, model training, and evaluation:
+
+* [Data Preparation Notebook](https://colab.research.google.com/drive/1tiVL2Q4mTpGoFClJU07t5aQFHvyg0F5C?usp=sharing): Analyzes audio files and splits them into segments based on energy levels, preparing the data for training.
+* [Model Training Notebook](https://colab.research.google.com/drive/1ONP8CdmWTSXNvV17h551anZ53u6ifo4n?usp=sharing): Trains the model on the prepared dataset and evaluates its performance.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software in accordance with the terms of the license.
